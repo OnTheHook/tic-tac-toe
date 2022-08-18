@@ -6,41 +6,96 @@ const game = (() => {
     })();
 
     //Create player using factory function
-    const player = (mark) => {
-        return { mark }
+    const player = (mark, name) => {
+        if ((!name) && mark === 'X') {
+            name = 'Player One'
+        } else if ((!name) && mark === 'O') {
+            name = 'Player Two'
+        }
+
+        return { mark, name }
     }
 
-    const playerOne = player('X')
-    const playerTwo = player('O')
 
 
+
+    //Controls the flow of the game
     const play = () => {
-        let turn = playerOne
 
+        let playerOne
+        let playerTwo
+        let turn 
+        const playerOneName = document.getElementById('player-one')
+        const playerTwoName = document.getElementById('player-two')
+        
+        let playing = false
 
+        const winnerDiv = document.querySelector('.winner')
+
+        //Button to start game and initiate players
+        const startButton = document.getElementById('start')
+        startButton.addEventListener('click', () => {
+            playing = true
+            playerOne = player('X', playerOneName.value)
+            playerTwo = player('O', playerTwoName.value)
+            turn = playerOne
+            console.log(playerOne)
+        })
+
+        
+
+        let over = false
         const boxes = document.querySelectorAll('.box')
+
+
+
+        //Button to reset game
+        const resetButton = document.getElementById('restart')
+        resetButton.addEventListener('click', () => {
+            boxes.forEach(box => {
+                box.textContent = ''
+            })
+            gameBoard.board = [['_', '_', '_'], ['_', '_', '_'], ['_', '_', '_']]
+            playing = true
+            over = false
+            turn = playerOne
+            winnerDiv.textContent = ''
+
+        })
+
+
+
+        //Set divs so that if you click on a spot it will check place the marker and check to see if someone has won
         boxes.forEach(box => box.addEventListener('click', () => {
-            let x = parseInt(box.id[0])
-            let y = parseInt(box.id[1])
-            let valid = checkValid(x, y)
-            if (valid) {
-                placeMarker(turn, x, y)
-                box.textContent = turn.mark
-                if (checkWinner(turn)) {
-                    console.log(turn)
-                    console.log('Wins')
-                } else if (tieGame()) {
-                    console.log('Tie')
-                } else {
-                    if (turn === playerOne) {
-                        turn = playerTwo
+            if (playing && !over) {
+                let x = parseInt(box.id[0])
+                let y = parseInt(box.id[1])
+                let valid = checkValid(x, y)
+                if (valid) {
+                    placeMarker(turn, x, y)
+                    box.textContent = turn.mark
+                    if (checkWinner(turn)) {
+                        console.log(turn)
+                        console.log('Wins')
+                        winnerDiv.textContent = turn.name + 'wins!'
+                        playing = false
+                        over = true
+                    } else if (tieGame()) {
+                        playing = false
+                        over = true
+                        console.log('Tie')
+                        winnerDiv.textContent = 'Tie game. Nobody wins.'
                     } else {
-                        turn = playerOne
+                        if (turn === playerOne) {
+                            turn = playerTwo
+                        } else {
+                            turn = playerOne
+                        }
                     }
+                } else {
+                    console.log('Not a valid spot')
+                    return
                 }
-            } else {
-                console.log('Not a valid spot')
-                return
             }
         }
         ))
@@ -82,7 +137,7 @@ const game = (() => {
             for (let i = 0; i < 3; i++) {
                 let testArr = []
                 for (let p = 0; p < 3; p++) {
-                    testArr.push(gameBoard.board[i][p])
+                    testArr.push(gameBoard.board[p][i])
                 }
                 if (allEqual(testArr, potentialWinner.mark)) {
                     console.log('vertical win')
@@ -121,7 +176,9 @@ const game = (() => {
         }
 
 
+
     }
+
     return { play }
 
 })();
