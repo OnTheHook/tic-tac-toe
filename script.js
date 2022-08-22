@@ -24,13 +24,16 @@ const game = (() => {
 
         let playerOne
         let playerTwo
-        let turn 
+        let turn
         const playerOneName = document.getElementById('player-one')
         const playerTwoName = document.getElementById('player-two')
-        
+
         let playing = false
 
         const winnerDiv = document.querySelector('.winner')
+        winnerDiv.addEventListener('click', (e) => {
+            winnerDiv.classList.remove('visible')
+        })
 
         //Button to start game and initiate players
         const startButton = document.getElementById('start')
@@ -42,7 +45,7 @@ const game = (() => {
             console.log(playerOne)
         })
 
-        
+
 
         let over = false
         const boxes = document.querySelectorAll('.box')
@@ -77,7 +80,8 @@ const game = (() => {
                     if (checkWinner(turn)) {
                         console.log(turn)
                         console.log('Wins')
-                        winnerDiv.textContent = turn.name + 'wins!'
+                        winnerDiv.textContent = turn.name + ' wins!'
+                        winnerDiv.classList.add('visible')
                         playing = false
                         over = true
                     } else if (tieGame()) {
@@ -85,6 +89,7 @@ const game = (() => {
                         over = true
                         console.log('Tie')
                         winnerDiv.textContent = 'Tie game. Nobody wins.'
+                        winnerDiv.classList.add('visible')
                     } else {
                         if (turn === playerOne) {
                             turn = playerTwo
