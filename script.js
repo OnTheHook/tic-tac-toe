@@ -28,8 +28,13 @@ const game = (() => {
         const playerOneName = document.getElementById('player-one')
         const playerTwoName = document.getElementById('player-two')
 
+        //Variable to keep track of if the game is currently being played
         let playing = false
 
+        //Variable to say when game is over
+        let over = false
+
+        //Selects the div that displays the winner and makes it removes the visible class when clicked on
         const winnerDiv = document.querySelector('.winner')
         winnerDiv.addEventListener('click', (e) => {
             winnerDiv.classList.remove('visible')
@@ -38,16 +43,19 @@ const game = (() => {
         //Button to start game and initiate players
         const startButton = document.getElementById('start')
         startButton.addEventListener('click', () => {
-            playing = true
-            playerOne = player('X', playerOneName.value)
-            playerTwo = player('O', playerTwoName.value)
-            turn = playerOne
-            console.log(playerOne)
+            if (!playing && !over) {
+                playing = true
+                playerOne = player('X', playerOneName.value)
+                playerTwo = player('O', playerTwoName.value)
+                turn = playerOne
+                console.log(playerOne)
+            }
         })
 
 
 
-        let over = false
+
+        //Selects all the playing squares
         const boxes = document.querySelectorAll('.box')
 
 
@@ -57,11 +65,11 @@ const game = (() => {
         resetButton.addEventListener('click', () => {
             boxes.forEach(box => {
                 box.textContent = ''
+                box.style.backgroundColor = '#34495E'
             })
             gameBoard.board = [['_', '_', '_'], ['_', '_', '_'], ['_', '_', '_']]
-            playing = true
             over = false
-            turn = playerOne
+            playing = false
             winnerDiv.textContent = ''
 
         })
@@ -135,6 +143,7 @@ const game = (() => {
             for (let i = 0; i < 3; i++) {
                 if (allEqual(gameBoard.board[i], potentialWinner.mark)) {
                     console.log('horizontal win')
+                    changeColor([i, i, i], [0, 1, 2])
                     return true
                 }
             }
@@ -145,6 +154,7 @@ const game = (() => {
                     testArr.push(gameBoard.board[p][i])
                 }
                 if (allEqual(testArr, potentialWinner.mark)) {
+                    changeColor([0, 1, 2], [i, i, i])
                     console.log('vertical win')
                     return true
                 }
@@ -158,9 +168,11 @@ const game = (() => {
             }
 
             if (allEqual(testArr1, potentialWinner.mark)) {
+                changeColor([0, 1, 2], [0, 1, 2])
                 console.log('diagonal win 1')
                 return true
             } else if (allEqual(testArr2, potentialWinner.mark)) {
+                changeColor([2, 1, 0], [0, 1, 2])
                 console.log(testArr2)
                 console.log('diagonal win 2')
                 return true
@@ -180,6 +192,18 @@ const game = (() => {
             return true
         }
 
+        //function to change color of winning row, column, or diagonal
+        const changeColor = (x, y) => {
+            boxes.forEach(b => {
+
+                for (let i = 0; i < 3; i++) {
+                    let boxChangeId = x[i].toString() + y[i].toString();
+                    if (b.id === boxChangeId) {
+                        b.style.backgroundColor = '#000000'
+                    }
+                }
+            })
+        }
 
 
     }
